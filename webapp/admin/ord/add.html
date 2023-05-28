@@ -1,0 +1,433 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="Expires" content="0">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Cache-control" content="no-cache">
+	<meta http-equiv="Cache" content="no-cache">
+	<link rel="icon" href="data:image/ico;base64,aWNv">
+  	<title></title>
+  	<link rel="stylesheet" href="../../resource/lib/layui/css/layui.css" media="all">
+  	<link rel="stylesheet" href="../../resource/lib/layuiadmin/css/admin.css" media="all">
+  	<link rel="stylesheet" href="../../resource/lib/layuiadmin/css/cmm.css" media="all">
+  	<link rel="stylesheet" href="add.css" media="all">
+  	
+ 	<script src="../../resource/lib/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+  	<script src="../../resource/lib/layui/layui.js" type="text/javascript"></script>
+ 	<script src="../../resource/lib/layer/layer.min.js" type="text/javascript"></script>
+	<script src="../../resource/extjs/extendJQ.js" type="text/javascript"></script>
+	<script src="../../resource/lib/layuiadmin/cmm.js" type="text/javascript"></script>
+</head>
+<body style="background: #F6F7F9;">
+<div class="main">
+	<div class="layui-row">
+		<div class="main_left layui-col-xs12 layui-col-md3">
+			<div class="layui-row">
+				<div class="top">
+					<i class="layui-icon layui-icon-app"></i>服务列表
+				</div>
+				<div class="left_main">
+					<input id="key" class="mini-textbox" placeholder="请输入服务名称" onenter="onKeyEnter"/>
+    				<a class="mini-button" onclick="search()">查询</a> 
+    				<ul id="tree1" class="mini-tree" url="getPrdTree" showTreeIcon="true" textField="name" idField="id" expandOnLoad="true" onNodeClick="onNodeClick">
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div class="main_right layui-col-xs12 layui-col-md9">
+			<div class="layui-row">
+				<div class="top">
+					<input type="hidden" name="prdnos" value="" autocomplete="off"/>
+					<input type="hidden" name="nums" value="" autocomplete="off"/>
+					<div class="layui-inline">
+			  			<label class="layui-form-label" style="width:90px;line-height:30px;">客户姓名</label>
+			            <div class="layui-input-block">
+			              	<input type="text" name="cstnm" lay-verify="required" placeholder="" autocomplete="off" class="layui-input">
+			            </div>
+			        </div>
+			        <div class="layui-inline">
+			  			<label class="layui-form-label" style="width:90px;line-height:30px;">客户类别</label>
+			            <div class="layui-input-block">
+			              	<input type="text" name="tel" lay-verify="phone" placeholder="" autocomplete="off" class="layui-input">
+			            </div>
+			        </div>
+			        <div class="layui-inline">
+			  			<label class="layui-form-label" style="width:90px;line-height:30px;">地址</label>
+			            <div class="layui-input-block">
+			              	<input type="text" name="addr" placeholder="" autocomplete="off" class="layui-input">
+			            </div>
+			        </div>
+					<div class="layui-inline">
+			  			<label class="layui-form-label" style="width:90px;line-height:30px;">联系电话</label>
+			            <div class="layui-input-block">
+			              	<input type="text" name="descr" placeholder="" autocomplete="off" class="layui-input">
+			            </div>
+			        </div>
+				</div>
+				<div class="goods_list" style="height:600px;">
+					<table class="layui-table">
+						<thead>
+							<tr>
+							 	<th lay-data="{field:'id'}" style="display:none;"></th>
+								<th lay-data="{field:'icon'}">缩略图</th>
+								<th lay-data="{field:'no'}">服务编码</th>
+								<th lay-data="{field:'name'}">服务名称</th>
+								<th lay-data="{field:'price', edit: 'text'}">单价（元）</th>
+								<th lay-data="{field:'number', edit: 'text'}">数量</th>
+								<th lay-data="{field:'integral'}">库存</th>
+								<!--<th lay-data="{field:'staff', edit: 'text'}">提成员工</th>-->
+								<th lay-data="{field:'operation'}">操作</th>
+							</tr>
+						</thead>
+						<tbody id="myTbody">
+							
+						</tbody>
+					</table>
+				</div>
+				<div class="total ft16">
+					合计：【<span> 消费总金额：<i class="totalMoney">0.00</i> </span>】【<span> 消费总数量：<i class="totalQuantity">0</i> </span>】
+				</div>
+				<div class="towbtn">
+					<button id="saveBtn" class="card_reading layui-btn">保存订单</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="add.js"></script>
+<script>
+$(function(){
+	$("#saveBtn").click(function(){
+		if (!$("[name='cstnm']").val()) {
+			alert("请输入客户姓名"); return;
+		}
+		if (!$("[name='tel']").val()) {
+			alert("请输入联系电话"); return;
+		}
+		if (!$("[name='addr']").val()) {
+			alert("请输入地址"); return;
+		}
+		if (!$("[name='prdnos']").val()) {
+			alert("请选择服务"); return;
+		}
+		var params = {
+				cstnm: $("[name='cstnm']").val(),
+				tel: $("[name='tel']").val(),
+				addr: $("[name='addr']").val(),
+				prdnos: $("[name='prdnos']").val(),
+				nums: $("[name='nums']").val(),
+				descr: $("[name='descr']").val(),
+		};
+		$.ajax({
+	        type:"post",  //提交方式  
+	        dataType:"json", //数据类型  
+	        data : params,
+	        url:"add.do", //请求url  
+	        success:function(data){ //提交成功的回调函数 
+	        	if (data.success) {
+	        		layer.msg(data.msg, {icon:data.icon,time:1500},function(){
+            			var index = parent.layer.getFrameIndex(window.name);
+		                parent.$('#search').click();
+		    	      	parent.layer.close(index);
+		                
+		            });
+	        	} else {
+	        		layer.alert(data.msg,{icon : data.icon});
+	        	}
+	        },
+	        error:function(XMLHttpRequest, textStatus, errorThrown) {
+	        	alert(XMLHttpRequest.status + "\r\n"+ errorThrown);
+	        	console.log(XMLHttpRequest, XMLHttpRequest.status,textStatus, errorThrown);
+	        }  
+	    });
+	});
+});
+
+	/*miniui - tree 插件 - 开始*/
+	mini.parse();
+    var tree = mini.get("tree1");
+    function search() {
+        var key = mini.get("key").getValue();
+        if (key == "") {
+            tree.clearFilter();
+        } else {
+            key = key.toLowerCase();                
+            tree.filter(function (node) {
+                var name = node.name ? node.name.toLowerCase() : "";
+                if (name.indexOf(key) != -1) {
+                    return true;
+                }
+            });
+        }
+    }
+    function onKeyEnter(e) {
+        search();
+    }
+
+    var totalQuantity = 0;    //总数量
+	var totalMoney = 0;       //总金额
+	var totalIntegral = 0;    //总积分
+	function onNodeClick(){  
+		//获取选中节点的值
+		var flag = false;
+  		var tree=mini.get("tree1");
+        node=tree.getSelectedNode();
+  		if(node.end){
+  			/*树结构选中服务，table列表变化 - 开始*/
+	        totalQuantity++;
+	        $('.totalQuantity').html(totalQuantity);
+	        
+	        this_price = node.price; //获取单价
+	        this_price = parseFloat(this_price);
+	        totalMoney += this_price;
+	        $('.totalMoney').html(totalMoney.toFixed(2));
+	        
+	        this_integral = node.integral; //获取积分  
+	        this_integral = parseFloat(this_integral);
+	        totalIntegral += this_integral;
+	        $('.totalIntegral').html(totalIntegral.toFixed(0));
+  			/*树结构选中服务，table列表变化 - 结束*/
+  		
+  			if($("#myTbody tr").length <= 0){
+  				var addtr = '<tr class="mytr">';
+  				addtr += '<td style="display:none;">'+node.id+'</td>';
+				addtr += '<td><img src="'+node.icon+'" style="height:100px;"/></td>';
+				addtr += '<td class="prdno">'+node.no+'</td>';
+				addtr += '<td>'+node.name+'</td>'	;					
+				addtr += '<td class="kbj danjia">'+node.price+'</td>';
+				addtr += '<td class="numberTd"><div class="jiajian"><span class="jian" onclick="num_sub(this)">-</span><input type="text" value="1" class="num"><span class="jia" onclick="num_add(this)">+</span></div></td>';
+				addtr += '<td class="stock">'+node.num+'</td>';						
+				addtr += '<td><button class="delete_btn">删除</button></td>';						
+				addtr += '</tr>';
+				$("#myTbody").append(addtr);
+				setTotal();	
+				return;
+  			}else{          
+				$("#myTbody tr").each(function () {
+                    //找到服务的名称与上面获取到的服务名称进行对比
+                    if ($(this).children("td:eq(0)").html() == node.id) {
+                        //找到此服务的数量
+                        var count = parseInt($(this).children("td:eq(5)").find("input").val());
+                        count++;
+                        $(this).children("td:eq(5)").find("input").val(count); //对服务的数量进行重新赋值
+						flag = true;
+						setTotal();	
+                        return false;
+                    }else {
+                        flag = false;
+                    }
+                })
+  			}
+			//如果为默认值也就是说里面没有此服务，所以添加此服务。
+			if (flag == false) {
+				var addtr = '<tr class="mytr">';
+				addtr += '<td style="display:none;">'+node.id+'</td>';
+				addtr += '<td><img src="'+node.icon+'" style="height:100px;"/></td>';
+				addtr += '<td class="prdno">'+node.no+'</td>';
+				addtr += '<td>'+node.name+'</td>'	;					
+				addtr += '<td class="danjia">'+node.price+'</td>';
+				addtr += '<td><div class="jiajian"><span class="jian" onclick="num_sub(this)">-</span><input type="text" value="1" class="num"><span class="jia" onclick="num_add(this)">+</span></div></td>';
+				addtr += '<td class="stock">'+node.num+'</td>';						
+				addtr += '<td><button class="delete_btn">删除</button></td>';						
+				addtr += '</tr>';
+				$("#myTbody").append(addtr);
+			}
+			setTotal();	
+  		}
+	}
+	/*miniui - tree 插件 - 结束*/
+	
+	//加的效果 
+	function num_add(on_this){
+		
+		var totalQuantity = 0;    //总数量
+		var totalMoney = 0;       //总金额
+		var totalIntegral = 0;    //总积分
+		$("#myTbody tr").each(function(){
+			
+	        //获取当前行的单价
+	        this_price = $(this).children(".danjia").text();
+	        this_price = parseFloat(this_price);
+	        
+	        //获取当前行的积分
+	        this_integral = $(this).children(".stock").text();
+        	this_integral = parseFloat(this_integral);
+        	
+        	//获取当前行的数量
+        	this_num = $(this).find(".num").val();
+        	this_num = parseInt(this_num);
+        	
+        	//获取当前行的总价格、总积分
+        	var trmoney = this_price*this_num;
+        	var trIntegral = this_integral*this_num;
+        	
+        	//总金额、总数量、总积分
+        	totalQuantity += this_num*1;   //总数量
+        	totalMoney += trmoney*1        //总金额
+        	totalIntegral += trIntegral*1  //总积分
+		}) 
+		$(".totalQuantity").html(totalQuantity);
+		$(".totalMoney").html(totalMoney); 
+		$(".totalIntegral").html(totalIntegral);
+		
+        this_price = $(on_this).parents("td").siblings("td.danjia").text();//获取单价
+        this_price = parseFloat(this_price);
+        console.log(totalMoney);
+        totalMoney += this_price;
+        $('.totalMoney').html(totalMoney.toFixed(2));
+        console.log(totalMoney);
+        
+        this_integral = $(on_this).parents("td").siblings("td.stock").text();//获取积分  
+        this_integral = parseFloat(this_integral);
+        totalIntegral += this_integral;
+        $('.totalIntegral').html(totalIntegral.toFixed(0));
+		
+		//当前服务数量
+        this_num = $(on_this).siblings('.num');
+        var get_this_num = parseInt(this_num.val())+1;
+        this_num.val(get_this_num);
+        
+        totalQuantity++;
+        $('.totalQuantity').html(totalQuantity);
+        setTotal();	
+    }
+	
+	//减的效果  
+	function num_sub(on_this){
+        
+        var totalQuantity = 0;    //总数量
+		var totalMoney = 0;       //总金额
+		var totalIntegral = 0;    //总积分
+		$("#myTbody tr").each(function(){
+			
+	        //获取当前行的单价
+	        this_price = $(this).children(".danjia").text();
+	        this_price = parseFloat(this_price);
+	        
+	        //获取当前行的积分
+	        this_integral = $(this).children(".stock").text();
+        	this_integral = parseFloat(this_integral);
+        	
+        	//获取当前行的数量
+        	this_num = $(this).find(".num").val();
+        	this_num = parseInt(this_num);
+        	
+        	//获取当前行的总价格、总积分
+        	var trmoney = this_price*this_num;
+        	var trIntegral = this_integral*this_num;
+        	
+        	//总金额、总数量、总积分
+        	totalQuantity += this_num*1;   //总数量
+        	totalMoney += trmoney*1        //总金额
+        	totalIntegral += trIntegral*1  //总积分
+		}) 
+		$(".totalQuantity").html(totalQuantity);
+		$(".totalMoney").html(totalMoney); 
+		$(".totalIntegral").html(totalIntegral);
+        
+        //当前服务数量
+        this_num = $(on_this).siblings('.num');
+        if(this_num.val() <= 1){
+            //this_num.siblings('.jian').removeAttr('onclick');
+            return;
+        }else{
+        	var get_this_num = this_num.val()-1;
+	        this_num.val(get_this_num);
+	        
+	        this_price = $(on_this).parents("td").siblings("td.danjia").text();//获取单价
+	        totalMoney -= this_price;
+	        $('.totalMoney').html(totalMoney.toFixed(2));
+	        
+	        this_integral = $(on_this).parents("td").siblings("td.stock").text();//获取积分  
+	        totalIntegral -= this_integral;
+	        $('.totalIntegral').html(totalIntegral.toFixed(0));
+	        
+	        totalQuantity--;
+	        $('.totalQuantity').html(totalQuantity);	
+        }
+        setTotal();	
+    }
+	
+	//输入服务数量时改变合计的内容
+	$("#myTbody").on("keyup",".num",function(){
+		if($(this).val()==''){
+            $(this).val('1');
+        }
+        $(this).val($(this).val().replace(/\D|^0/g,''));
+        console.log($(this).val(),$(".stock", $(this).parent().parent().parent()).html());
+        if ($(this).val()*1>$(".stock", $(this).parent().parent().parent()).html()*1) {
+        	alert("超出库存！");
+        	$(this).val($(".stock", $(this).parent().parent().parent()).html());
+        }
+		setTotal();	
+	})
+	
+	//输入服务价格时改变合计的内容
+	$("#myTbody").on("change",".danjia input",function(){
+		var $this = $(this).val();
+		var reg = /^(([1-9]+)|([0-9]+\.[0-9]{1,2}))$/;
+		if(!reg.test($this)){
+			alert("请输入非负浮点数");
+			$(this).parent().removeClass('bj').html($this||"1.00");
+			$(this).val(currentPrice);
+	    }else{
+	    	$(this).parent().removeClass('bj').html($this||"1.00");
+		 	setTotal();
+		}
+	})
+	
+	//table tr 点击删除
+	$("#myTbody").on("click",".delete_btn",function(){
+		if($("#myTbody tr").length < 1){
+			$(".totalQuantity").html("0");
+			$(".totalMoney").html("0"); 
+			$(".totalIntegral").html("0");
+			return;
+		}
+		
+		$(this).parents("#myTbody tr").remove();
+		setTotal();
+	})
+	
+	function setTotal(){
+		var totalQuantity = 0;    //总数量
+		var totalMoney = 0;       //总金额
+		var totalIntegral = 0;    //总积分
+		var prdnos = "";
+		var nums = "";
+		$("#myTbody tr").each(function(){
+			
+	        //获取当前行的单价
+	        this_price = $(this).children(".danjia").text();
+	        this_price = parseFloat(this_price);
+	        
+        	//获取当前行的数量
+        	this_num = $(this).find(".num").val();
+        	this_num = parseInt(this_num);
+        	
+        	//获取当前行的总价格、总积分
+        	var trmoney = this_price*this_num;
+        	var trIntegral = this_integral*this_num;
+        	
+        	//总金额、总数量、总积分
+        	totalQuantity += this_num*1;   //总数量
+        	totalMoney += trmoney*1        //总金额
+        	totalIntegral += trIntegral*1  //总积分
+        	
+        	prdnos += prdnos?",":"";
+        	nums += nums?",":"";
+        	prdnos += $(this).children(".prdno").text();
+        	nums += $(this).find(".num").val();
+        	console.log(prdnos,nums);
+        	
+		}) 
+		$(".totalQuantity").html(totalQuantity);
+		$(".totalMoney").html(totalMoney); 
+		$(".totalIntegral").html(totalIntegral);
+		$("[name='prdnos']").val(prdnos);
+		$("[name='nums']").val(nums);
+	}
+</script>
+</body>
+</html>

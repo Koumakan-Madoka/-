@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="Expires" content="0">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Cache-control" content="no-cache">
+	<meta http-equiv="Cache" content="no-cache">
+	<link rel="icon" href="data:image/ico;base64,aWNv">
+	<title></title>
+	<script src="../../resource/lib/jquery/1.9.1/jquery.min.js"></script>
+	<script src="../../resource/lib/vue/vue.min.js"></script>
+	<script src="../../resource/extjs/extendJQ.js" type="text/javascript"></script>
+</head>
+<body>
+	<div id="app">
+		<table width="800" align="center">
+			<tr>
+				<td align="center"
+					style="font-family: STHupo; font-size: 200%; color: orange"><p>
+						<i>个人信息
+					</p>
+					</i>
+					<hr width="1000" align="left"> 
+					<img :src="info.icon" width="160"  align="right"></td>
+
+			</tr>
+		</table>
+
+		<table align="center" width="800">
+			<tr>
+				<td height="60" style="color: black;font-family:YouYuan"><b>姓名： {{ info.name }}</b></td>
+				<td style="color: black;font-family:YouYuan"><b>工号： {{ info.no }}</b></td>
+				<td style="color: black;font-family:YouYuan"><b>性别： {{ info.sex }}</b></td>
+			</tr>
+			<tr>
+				<td height="60" style="color:black;font-family:YouYuan"><b>入职日期： {{ info.ymd }}</b></td>
+				<td style="color: black;font-family:YouYuan"><b>联系电话： {{ info.tel }} </b></td>
+				<td style="color: black;font-family:YouYuan"><b>年龄： {{ info.age }}</b></td>
+			</tr>
+			<tr>
+				<td style="color:black;font-family:YouYuan" colspan="2"><b>身份证： {{ info.idc }}</b></td>
+				<td style="color: black;font-family:YouYuan"></td>
+			</tr>
+			<tr><td>&nbsp;</td><td></td><td></td></tr>
+		</table>
+		<hr width="1000" align="center">
+		<table align="center" width="800">
+			<tr>
+				<td style="color: black;font-family/;YouYuan"><b>备注：</b> {{ info.descr }}</td>
+			</tr>
+		</table>
+		<hr width="1000" align="center">
+		</hr>
+		</table>
+	</div>
+	
+<script>
+$(function(){
+	new Vue({
+		el: '#app',
+	  	data: {
+	    	info: {}
+	  	},
+	  	mounted : function(){
+			var _self = this;
+		  	$.ajax({
+          		type:"post",
+              	dataType:"json",
+              	data : {
+              		id : $(this).getUrlParam("id")
+              	},
+              	url:"getInfo.do", //请求url  
+              	success:function(data){
+              		_self.info = data;
+              		console.log(data);
+              	}
+		  	});
+		}
+	});
+})
+</script>
+</body>
+<style>
+body {
+	border: 50px;
+	border-radius: 5px;
+	position: 80px;
+	background-size: 50% auto;
+	width: 50%;
+	height: 50%;
+	margin-left: auto;
+	margin-right: auto
+}
+</style>
+
+</body>
+</html>

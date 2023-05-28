@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  	<meta charset="UTF-8">
+	<meta http-equiv="Expires" content="0">
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Cache-control" content="no-cache">
+	<meta http-equiv="Cache" content="no-cache">
+	<link rel="icon" href="data:image/ico;base64,aWNv">
+  	<title></title>
+  	<link rel="stylesheet" href="../../resource/lib/layui/css/layui.css" media="all">
+  	<link rel="stylesheet" href="../../resource/lib/layuiadmin/css/admin.css" media="all">
+  	<link rel="stylesheet" href="../../resource/lib/layuiadmin/css/cmm.css" media="all">
+  	
+ 	<script src="../../resource/lib/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+  	<script src="../../resource/lib/layui/layui.js" type="text/javascript"></script>
+ 	<script src="../../resource/lib/layer/layer.min.js" type="text/javascript"></script>
+	<script src="../../resource/extjs/extendJQ.js" type="text/javascript"></script>
+	<script src="../../resource/lib/layuiadmin/cmm.js" type="text/javascript"></script>
+</head>
+<body>
+  <div id="formId1" class="layui-form" lay-filter="fromId1" style="padding: 20px 30px 0 0;">
+  	<input type="hidden" name="id">
+    <div class="layui-form-item">
+      <label class="layui-form-label">照片</label>
+      <div class="layui-input-inline">
+        <div class="layui-upload">
+          <input type="hidden" name="icon"  lay-verify="required"/> 
+          <button type="button" class="layui-btn" id="uploadImg1">上传图片</button>
+          <div class="layui-upload-list">
+            <img class="layui-upload-img" id="uploadImg1_img" style="height:120px;">
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">工号</label>
+      <div class="layui-input-inline">
+        <input type="text" name="no" lay-verify="required" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">姓名</label>
+      <div class="layui-input-inline">
+        <input type="text" name="name" lay-verify="required" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">性别</label>
+      <div class="layui-input-inline">
+        <input type="text" name="sex" lay-verify="required" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">年龄</label>
+      <div class="layui-input-inline">
+        <input type="text" name="age" lay-verify="required" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">联系电话</label>
+      <div class="layui-input-inline">
+        <input type="text" name="tel" lay-verify="phone" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">身份证号</label>
+      <div class="layui-input-inline">
+        <input type="text" name="idc" lay-verify="identity" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">入职日期</label>
+      <div class="layui-input-inline">
+        <input type="text" name="ymd" lay-verify="date" class="layui-input">
+      </div>
+    </div>
+    <div class="layui-form-item">
+      <label class="layui-form-label">备注</label>
+      <div class="layui-input-inline">
+      	<textarea class="layui-textarea" name="descr"></textarea>
+      </div>
+    </div>
+    
+    <div class="layui-form-item">
+      <div class="layui-input-block">
+        <button class="layui-btn" lay-submit="" lay-filter="fromId1-submit" >确认保存</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+$(function(){
+	//数据回显
+	var id = $(this).getUrlParam("id");
+	if (id) {
+		$.getJSON("getInfo.do?_t="+Math.random(), {id:id}, function(data){
+			for(k in data){
+				if ($("[name='"+k+"']").length){
+					$("[name='"+k+"']").attr("val", data[k]);
+					$("[name='"+k+"']").val(data[k]);
+				}
+			}
+			$("#uploadImg1_img").attr("src", data.icon);
+		});
+	} else {
+		$.getJSON("getInfo.do?_t="+Math.random(), {}, function(data){
+			for(k in data){
+				if ($("[name='"+k+"']").length){
+					$("[name='"+k+"']").attr("val", data[k]);
+					$("[name='"+k+"']").val(data[k]);
+				}
+			}
+			$("#uploadImg1_img").attr("src", data.icon);
+		});
+	}
+	//文件上传
+	layui.use('upload', function(){
+	  var upload = layui.upload;
+	  var uploadInst = upload.render({
+	    elem: '#uploadImg1'
+	    ,url: '../../common/cmm/uploadFile.do'
+	    ,accept: 'jpg,png,gif' //允许上传的文件类型
+	    ,size: 102400
+	    ,done: function(res){
+	    	$("#uploadImg1_img").attr("src", res.url);
+	    	$("[name='icon']").val(res.url);
+	    }
+	  });
+	});
+	//修改信息
+	layui.use(['index', 'form'], function(){
+	    var form = layui.form;
+	    form.on('submit(fromId1-submit)', function(data){
+	    	var params = JSON.parse($(this).form2JsonString("formId1"));
+	    	
+	    	console.log(params);
+	    	
+			$.ajax({
+                type:"post", 
+                dataType:"json", 
+                data : params,
+                url:"update.do",
+                success:function(data){
+                	if (data.success) {
+                		layer.msg(data.msg, {icon:data.icon,time:1500},function(){
+                			var index = parent.layer.getFrameIndex(window.name);
+    		                parent.$('#search').click();
+    		    	      	parent.layer.close(index);
+    		                
+    		            });
+                	} else {
+                		layer.alert(data.msg,{icon : data.icon});
+                	}
+                },
+                error:function(XMLHttpRequest, textStatus, errorThrown) {
+                	alert(XMLHttpRequest.status + "\r\n"+ errorThrown);
+                	console.log(XMLHttpRequest, XMLHttpRequest.status,textStatus, errorThrown);
+                }  
+            });
+	    });
+	}); 
+	
+});
+</script>
+</body>
+</html>

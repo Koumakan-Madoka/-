@@ -1,0 +1,153 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-control" content="no-cache">
+<meta http-equiv="Cache" content="no-cache">
+<link rel="icon" href="data:image/ico;base64,aWNv">
+<title>注册</title>
+<link href="css/login.css" rel="stylesheet" rev="stylesheet" type="text/css" media="all" />
+<script type="text/javascript" src="js/jQuery1.7.js"></script>
+<script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
+<script type="text/javascript" src="js/jquery1.42.min.js"></script>
+<script type="text/javascript" src="js/jquery.SuperSlide.js"></script>
+
+<script type="text/javascript">
+$(function(){
+	$(".screenbg ul li").each(function(){
+		$(this).css("opacity","0");
+	});
+	$(".screenbg ul li:first").css("opacity","1");
+	var index = 0;
+	var t;
+	var li = $(".screenbg ul li");	
+	var number = li.size();
+	function change(index){
+		li.css("visibility","visible");
+		li.eq(index).siblings().animate({opacity:0},3000);
+		li.eq(index).animate({opacity:1},3000);
+	}
+	function show(){
+		index = index + 1;
+		if(index<=number-1){
+			change(index);
+		}else{
+			index = 0;
+			change(index);
+		}
+	}
+	//t = setInterval(show,3000);
+	//根据窗口宽度生成图片宽度
+	var width = $(window).width();
+	$(".screenbg ul img").css("width",width+"px");
+});
+</script>
+</head>
+
+<body>
+<div id="tab">
+  <ul class="tab_menu">
+    <li  style="width:410px;">注册</li>
+  </ul>
+  <div class="tab_box"> 
+    <div>
+      <div class="stu_error_box"></div>
+      <form action="" method="post" class="stu_login_error" id="formId1">
+      	<input type="hidden" name="utype" value="20"/>
+        <div>
+          <label>用户昵称：</label>
+          <input type="text" name="name" />
+        </div>
+        <div>
+          <label>登录账号：</label>
+          <input type="text" name="login" />
+        </div>
+        <div>
+          <label>登录密码：</label>
+          <input type="password" name="pwd" />
+        </div>
+        <div>
+          <label>确认密码：</label>
+          <input type="password" name="pwd1" />
+        </div>
+		<div >
+          <label>
+          	<a href="login.html">登录</a>
+          </label>
+        </div>
+        <div>
+          <button id="submitBtn" type="button">注册</button>
+        </div>
+      </form>
+    </div>
+   
+  </div>
+</div>
+<div class="bottom"></div>
+<div class="screenbg">
+  <ul>
+    <li><a href="javascript:;"><img src="images/0.jpg"></a></li>
+    <li><a href="javascript:;"><img src="images/1.jpg"></a></li>
+    <li><a href="javascript:;"><img src="images/2.jpg"></a></li>
+  </ul>
+</div>
+<script src="../../resource/lib/jquery/1.9.1/jquery.min.js"  type="text/javascript"></script>
+<script  src="../../resource/lib/jquery.ui/1.12.1/jquery-ui.min.js"  type="text/javascript"></script>
+<script src="../../resource/extjs/extendJQ.js"  type="text/javascript"></script>
+<script type="text/javascript"  src="../../resource/lib/layui/layui.js"  charset="utf-8"></script>
+<script type="text/javascript" src="../common/js/cmm.js"  charset="utf-8"></script>
+<script type="text/javascript">
+$(function(){   
+     
+     //表单提交
+    $("#submitBtn").click(function(){
+           if (!$("[name='name']").val()) {
+                     alert("请输入用户昵称！");
+                     return false;
+                }
+           if (!$("[name='login']").val()) {
+                     alert("请输入登录账号！");
+                     return false;
+                }
+           if (!$("[name='pwd']").val()) {
+                     alert("请输入登录密码！");
+                     return false;
+                }
+           if (!$("[name='pwd1']").val()) {
+                     alert("请输入确认密码！");
+                     return false;
+                }
+                if  ($("[name='pwd']").val()!=$("[name='pwd1']").val()) {
+                     alert("两次密码输入不一致！");
+                     return false;
+                }
+                var params = {};
+                var t = $('#formId1').serializeArray();
+                $.each(t, function() {
+                     params[this.name] = this.value;
+                });
+                $.ajax({
+                type:"post",  //提交方式  
+                dataType:"json", //数据类型  
+                data : params,
+                url:"../../admin/user/regist.do", //请求url  
+                success:function(data){ //提交成功的回调函数
+                  if (data.success) {
+                       alert(data.msg);
+                       window.location="../login/login.html";
+                  } else {
+                       alert(data.msg);
+                  }
+                },
+                error:function(XMLHttpRequest, textStatus,  errorThrown) {
+                  alert(XMLHttpRequest.status + "\r\n"+  errorThrown);
+                  console.log(XMLHttpRequest,  XMLHttpRequest.status,textStatus, errorThrown);
+                }  
+            });
+     });
+});
+</script>
+</body>
+</html>

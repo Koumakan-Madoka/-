@@ -1,0 +1,46 @@
+{
+	"webnm": "服务出租系统",
+	"data": 
+		[
+			{
+				"name": "用户管理",
+				"icon": "layui-icon-user",
+				"children": [
+					{
+						"name": "账号管理",
+						"url": "../../admin/user/list.html"
+					},
+					{
+						"name": "员工信息管理",
+						"url": "../../admin/userinfo20/list.html"
+					}
+				]
+			},
+			{
+				"name": "服务项目管理",
+				"icon": "layui-icon-app",
+				"url": "../../admin/product/list.html"
+			},
+			{
+				"name": "审计日志管理",
+				"icon": "layui-icon-app",
+				"url": "../../admin/stock/list.html"
+			},
+			{
+				"name": "订单列表管理",
+				"icon": "layui-icon-app",
+				"url": "../../admin/ord/list.html"
+			},
+			{
+				"name": "项目分类管理",
+				"icon": "layui-icon-app",
+				"url": "../../admin/category/list.html?type=PRODUCT"
+			},
+			{
+				"name": "修改密码",
+				"icon": "layui-icon-theme",
+				"url": "../../admin/user/updateMyPwd.html"
+			}
+		]
+}
+

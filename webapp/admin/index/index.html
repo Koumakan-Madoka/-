@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>管理中心</title>
+<meta charset="UTF-8">
+<meta http-equiv="Expires" content="0">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-control" content="no-cache">
+<meta http-equiv="Cache" content="no-cache">
+<meta name="renderer" content="webkit">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+<link rel="icon" href="data:image/ico;base64,aWNv">
+<link rel="stylesheet" href="static/css/layui.css" media="all">
+<link rel="stylesheet" href="static/css/admin.css" media="all">
+
+<script type="text/javascript" src="../../resource/lib/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="../../resource/lib/layui/layui.js"></script>
+<script type="text/javascript">
+	layui.config({
+		base : 'static/js/'
+	});
+</script>
+<script type="text/javascript" src="static/js/index.js" charset="utf-8"></script>
+<script type="text/javascript" src="../../resource/lib/vue/vue.min.js"></script>
+
+<script type="text/javascript">
+$(function(){
+	//登录验证
+	layui.use(['login'], function(){
+		layui.login.checkLoginAdmin();
+		$("#logoutJS").click(function(){
+			layui.login.logout();
+		});
+	});
+	//初始化用户信息
+	$.ajax({
+		url:"../../admin/user/getInfo.do",
+        type:"post",
+        dataType:"json",
+        success:function(data){
+        	$("#usernameJS").html(data.name);
+        }
+	});
+	//菜单初始化
+	$.ajax({
+		url:"../../common/cmm/getMenu.do",
+        type:"post",
+        dataType:"json",
+        success:function(data){
+        	if(!data.data) return;
+        	$(document).attr("title",data.webnm);
+        	$(".webnm").html(data.webnm);
+        	for (i=0; i<data.data.length; i++) {
+        		var m = data.data[i];
+        		if (m.url) {
+        			$(".menu_"+i).parent().removeClass("layui-hide");
+        			$(".menu_"+i).attr("lay-href",m.url);
+        			$(".menu_"+i).attr("lay-tips",m.name);
+            		$(".menu_"+i+" i").addClass(m.icon);
+            		$(".menu_"+i+" cite").html(m.name);
+
+        		} else {
+        			$(".menu"+i).parent().removeClass("layui-hide");
+        			$(".menu"+i).attr("lay-tips",m.name);
+            		$(".menu"+i+" i").addClass(m.icon);
+            		$(".menu"+i+" cite").html(m.name);
+            		if (m.children) {
+            			for (j=0; j<m.children.length; j++) {
+            				$(".menu"+i+j).removeClass("layui-hide");
+            				$(".menu"+i+j).attr("lay-href",m.children[j].url);
+            				$(".menu"+i+j).html(m.children[j].name);
+            			}
+            		}
+        		}
+        	}
+  		}
+	});
+});
+</script>
+
+</head>
+<body class="layui-layout-body">
+	<div id="LAY_app">
+		<div class="layui-layout layui-layout-admin">
+			<div class="layui-header">
+				<!-- 头部区域 -->
+				<ul class="layui-nav layui-layout-left">
+					<li class="layui-nav-item layadmin-flexible" lay-unselect><a
+						href="javascript:;" layadmin-event="flexible" title="侧边伸缩"> <i
+							class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible"></i>
+					</a></li>
+					<li class="layui-nav-item" lay-unselect><a href="javascript:;"
+						layadmin-event="refresh" title="刷新"> <i
+							class="layui-icon layui-icon-refresh-3"></i>
+					</a></li>
+				</ul>
+				<ul class="layui-nav layui-layout-right" lay-filter="layadmin-layout-right" style="padding-right:10px;">
+
+					<li class="layui-nav-item layui-hide-xs" lay-unselect><a
+						href="../../"  title="主页" target="_blank"> <i
+							class="layui-icon layui-icon-home"></i>
+					</a></li>
+					<li class="layui-nav-item layui-hide-xs" lay-unselect><a
+						href="javascript:;" layadmin-event="fullscreen"  title="全屏"> <i
+							class="layui-icon layui-icon-screen-full"></i>
+					</a></li>
+					<li class="layui-nav-item" lay-unselect><a href="javascript:;">
+							<cite id="usernameJS"></cite>
+					</a>
+						<dl class="layui-nav-child">
+							<dd>
+								<a lay-href="../user/updateMyPwd.html">修改密码</a>
+							</dd>
+							<hr>
+							<dd style="text-align: center;">
+								<a id="logoutJS">退出</a>
+							</dd>
+						</dl></li>
+
+				</ul>
+			</div>
+
+			<!-- 侧边菜单 -->
+			<div class="layui-side layui-side-menu">
+				<div class="layui-side-scroll" id="menuJS">
+					<div class="layui-logo">
+						<span class="webnm">管理中心</span>
+					</div>
+					<ul class="layui-nav layui-nav-tree" lay-shrink="all" lay-filter="layadmin-system-side-menu">
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu_0"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+						</li>
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu0"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+							<dl class="layui-nav-child">
+								<dd><a class="menu00 layui-hide" lay-href="">0</a></dd>
+								<dd><a class="menu01 layui-hide" lay-href="">1</a></dd>
+								<dd><a class="menu02 layui-hide" lay-href="">2</a></dd>
+								<dd><a class="menu03 layui-hide" lay-href="">3</a></dd>
+								<dd><a class="menu04 layui-hide" lay-href="">4</a></dd>
+								<dd><a class="menu05 layui-hide" lay-href="">5</a></dd>
+								<dd><a class="menu06 layui-hide" lay-href="">6</a></dd>
+								<dd><a class="menu07 layui-hide" lay-href="">7</a></dd>
+								<dd><a class="menu08 layui-hide" lay-href="">8</a></dd>
+								<dd><a class="menu09 layui-hide" lay-href="">9</a></dd>
+							</dl>
+						</li>
+						
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu_1"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+						</li>
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu1"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+							<dl class="layui-nav-child">
+								<dd><a class="menu10 layui-hide" lay-href="">0</a></dd>
+								<dd><a class="menu11 layui-hide" lay-href="">1</a></dd>
+								<dd><a class="menu12 layui-hide" lay-href="">2</a></dd>
+								<dd><a class="menu13 layui-hide" lay-href="">3</a></dd>
+								<dd><a class="menu14 layui-hide" lay-href="">4</a></dd>
+								<dd><a class="menu15 layui-hide" lay-href="">5</a></dd>
+								<dd><a class="menu16 layui-hide" lay-href="">6</a></dd>
+								<dd><a class="menu17 layui-hide" lay-href="">7</a></dd>
+								<dd><a class="menu18 layui-hide" lay-href="">8</a></dd>
+								<dd><a class="menu19 layui-hide" lay-href="">9</a></dd>
+							</dl>
+						</li>
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu_2"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+						</li>
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu2"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+							<dl class="layui-nav-child">
+								<dd><a class="menu20 layui-hide" lay-href="">0</a></dd>
+								<dd><a class="menu21 layui-hide" lay-href="">1</a></dd>
+								<dd><a class="menu22 layui-hide" lay-href="">2</a></dd>
+								<dd><a class="menu23 layui-hide" lay-href="">3</a></dd>
+								<dd><a class="menu24 layui-hide" lay-href="">4</a></dd>
+								<dd><a class="menu25 layui-hide" lay-href="">5</a></dd>
+								<dd><a class="menu26 layui-hide" lay-href="">6</a></dd>
+								<dd><a class="menu27 layui-hide" lay-href="">7</a></dd>
+								<dd><a class="menu28 layui-hide" lay-href="">8</a></dd>
+								<dd><a class="menu29 layui-hide" lay-href="">9</a></dd>
+							</dl>
+						</li>
+						
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu_3"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+						</li>
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu3"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+							<dl class="layui-nav-child">
+								<dd><a class="menu30 layui-hide" lay-href="">0</a></dd>
+								<dd><a class="menu31 layui-hide" lay-href="">1</a></dd>
+								<dd><a class="menu32 layui-hide" lay-href="">2</a></dd>
+								<dd><a class="menu33 layui-hide" lay-href="">3</a></dd>
+								<dd><a class="menu34 layui-hide" lay-href="">4</a></dd>
+								<dd><a class="menu35 layui-hide" lay-href="">5</a></dd>
+								<dd><a class="menu36 layui-hide" lay-href="">6</a></dd>
+								<dd><a class="menu37 layui-hide" lay-href="">7</a></dd>
+								<dd><a class="menu38 layui-hide" lay-href="">8</a></dd>
+								<dd><a class="menu39 layui-hide" lay-href="">9</a></dd>
+							</dl>
+						</li>
+						
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu_4"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+						</li>
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu4"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+							<dl class="layui-nav-child">
+								<dd><a class="menu40 layui-hide" lay-href="">0</a></dd>
+								<dd><a class="menu41 layui-hide" lay-href="">1</a></dd>
+								<dd><a class="menu42 layui-hide" lay-href="">2</a></dd>
+								<dd><a class="menu43 layui-hide" lay-href="">3</a></dd>
+								<dd><a class="menu44 layui-hide" lay-href="">4</a></dd>
+								<dd><a class="menu45 layui-hide" lay-href="">5</a></dd>
+								<dd><a class="menu46 layui-hide" lay-href="">6</a></dd>
+								<dd><a class="menu47 layui-hide" lay-href="">7</a></dd>
+								<dd><a class="menu48 layui-hide" lay-href="">8</a></dd>
+								<dd><a class="menu49 layui-hide" lay-href="">9</a></dd>
+							</dl>
+						</li>
+						
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu_5"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+						</li>
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu5"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+							<dl class="layui-nav-child">
+								<dd><a class="menu50 layui-hide" lay-href="">0</a></dd>
+								<dd><a class="menu51 layui-hide" lay-href="">1</a></dd>
+								<dd><a class="menu52 layui-hide" lay-href="">2</a></dd>
+								<dd><a class="menu53 layui-hide" lay-href="">3</a></dd>
+								<dd><a class="menu54 layui-hide" lay-href="">4</a></dd>
+								<dd><a class="menu55 layui-hide" lay-href="">5</a></dd>
+								<dd><a class="menu56 layui-hide" lay-href="">6</a></dd>
+								<dd><a class="menu57 layui-hide" lay-href="">7</a></dd>
+								<dd><a class="menu58 layui-hide" lay-href="">8</a></dd>
+								<dd><a class="menu59 layui-hide" lay-href="">9</a></dd>
+							</dl>
+						</li>
+						
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu_6"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+						</li>
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu6"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+							<dl class="layui-nav-child">
+								<dd><a class="menu60 layui-hide" lay-href="">0</a></dd>
+								<dd><a class="menu61 layui-hide" lay-href="">1</a></dd>
+								<dd><a class="menu62 layui-hide" lay-href="">2</a></dd>
+								<dd><a class="menu63 layui-hide" lay-href="">3</a></dd>
+								<dd><a class="menu64 layui-hide" lay-href="">4</a></dd>
+								<dd><a class="menu65 layui-hide" lay-href="">5</a></dd>
+								<dd><a class="menu66 layui-hide" lay-href="">6</a></dd>
+								<dd><a class="menu67 layui-hide" lay-href="">7</a></dd>
+								<dd><a class="menu68 layui-hide" lay-href="">8</a></dd>
+								<dd><a class="menu69 layui-hide" lay-href="">9</a></dd>
+							</dl>
+						</li>
+						
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu_7"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+						</li>
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu7"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+							<dl class="layui-nav-child">
+								<dd><a class="menu70 layui-hide" lay-href="">0</a></dd>
+								<dd><a class="menu71 layui-hide" lay-href="">1</a></dd>
+								<dd><a class="menu72 layui-hide" lay-href="">2</a></dd>
+								<dd><a class="menu73 layui-hide" lay-href="">3</a></dd>
+								<dd><a class="menu74 layui-hide" lay-href="">4</a></dd>
+								<dd><a class="menu75 layui-hide" lay-href="">5</a></dd>
+								<dd><a class="menu76 layui-hide" lay-href="">6</a></dd>
+								<dd><a class="menu77 layui-hide" lay-href="">7</a></dd>
+								<dd><a class="menu78 layui-hide" lay-href="">8</a></dd>
+								<dd><a class="menu79 layui-hide" lay-href="">9</a></dd>
+							</dl>
+						</li>
+						
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu_8"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+						</li>
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu8"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+							<dl class="layui-nav-child">
+								<dd><a class="menu80 layui-hide" lay-href="">0</a></dd>
+								<dd><a class="menu81 layui-hide" lay-href="">1</a></dd>
+								<dd><a class="menu82 layui-hide" lay-href="">2</a></dd>
+								<dd><a class="menu83 layui-hide" lay-href="">3</a></dd>
+								<dd><a class="menu84 layui-hide" lay-href="">4</a></dd>
+								<dd><a class="menu85 layui-hide" lay-href="">5</a></dd>
+								<dd><a class="menu86 layui-hide" lay-href="">6</a></dd>
+								<dd><a class="menu87 layui-hide" lay-href="">7</a></dd>
+								<dd><a class="menu88 layui-hide" lay-href="">8</a></dd>
+								<dd><a class="menu89 layui-hide" lay-href="">9</a></dd>
+							</dl>
+						</li>
+						
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu_9"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+						</li>
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu9"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+							<dl class="layui-nav-child">
+								<dd><a class="menu90 layui-hide" lay-href="">0</a></dd>
+								<dd><a class="menu91 layui-hide" lay-href="">1</a></dd>
+								<dd><a class="menu92 layui-hide" lay-href="">2</a></dd>
+								<dd><a class="menu93 layui-hide" lay-href="">3</a></dd>
+								<dd><a class="menu94 layui-hide" lay-href="">4</a></dd>
+								<dd><a class="menu95 layui-hide" lay-href="">5</a></dd>
+								<dd><a class="menu96 layui-hide" lay-href="">6</a></dd>
+								<dd><a class="menu97 layui-hide" lay-href="">7</a></dd>
+								<dd><a class="menu98 layui-hide" lay-href="">8</a></dd>
+								<dd><a class="menu99 layui-hide" lay-href="">9</a></dd>
+							</dl>
+						</li>
+						
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu_10"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+						</li>
+						<li data-name="template" class="layui-nav-item layui-hide">
+							<a href="javascript:;" lay-tips="" lay-direction="2" class="menu10"> 
+								<i class="layui-icon"></i> 
+								<cite></cite>
+							</a>
+							<dl class="layui-nav-child">
+								<dd><a class="menu100 layui-hide" lay-href="">0</a></dd>
+								<dd><a class="menu101 layui-hide" lay-href="">1</a></dd>
+								<dd><a class="menu102 layui-hide" lay-href="">2</a></dd>
+								<dd><a class="menu103 layui-hide" lay-href="">3</a></dd>
+								<dd><a class="menu104 layui-hide" lay-href="">4</a></dd>
+								<dd><a class="menu105 layui-hide" lay-href="">5</a></dd>
+								<dd><a class="menu106 layui-hide" lay-href="">6</a></dd>
+								<dd><a class="menu107 layui-hide" lay-href="">7</a></dd>
+								<dd><a class="menu108 layui-hide" lay-href="">8</a></dd>
+								<dd><a class="menu109 layui-hide" lay-href="">9</a></dd>
+							</dl>
+						</li>
+					</ul>
+				</div>
+			</div>
+
+			<!-- 页面标签 -->
+			<div class="layadmin-pagetabs" id="LAY_app_tabs">
+				<div class="layui-icon layadmin-tabs-control layui-icon-prev"
+					layadmin-event="leftPage"></div>
+				<div class="layui-icon layadmin-tabs-control layui-icon-next"
+					layadmin-event="rightPage"></div>
+				<div class="layui-icon layadmin-tabs-control layui-icon-down">
+					<ul class="layui-nav layadmin-tabs-select"
+						lay-filter="layadmin-pagetabs-nav">
+						<li class="layui-nav-item" lay-unselect><a
+							href="javascript:;"></a>
+							<dl class="layui-nav-child layui-anim-fadein">
+								<dd layadmin-event="closeThisTabs">
+									<a href="javascript:;">关闭当前标签页</a>
+								</dd>
+								<dd layadmin-event="closeOtherTabs">
+									<a href="javascript:;">关闭其它标签页</a>
+								</dd>
+								<dd layadmin-event="closeAllTabs">
+									<a href="javascript:;">关闭全部标签页</a>
+								</dd>
+							</dl></li>
+					</ul>
+				</div>
+				<div class="layui-tab" lay-unauto lay-allowClose="true"
+					lay-filter="layadmin-layout-tabs">
+					<ul class="layui-tab-title" id="LAY_app_tabsheader">
+						<li lay-id="" lay-attr="" class="layui-this layui-hide"><i class="layui-icon layui-icon-home"></i></li>
+					</ul>
+				</div>
+			</div>
+
+
+			<!-- 主体内容 -->
+			<div class="layui-body" id="LAY_app_body">
+				<div class="layadmin-tabsbody-item layui-show">
+					<iframe src="" frameborder="0"	class="layadmin-iframe"></iframe>
+				</div>
+			</div>
+
+			<!-- 辅助元素，一般用于移动设备下遮罩 -->
+			<div class="layadmin-body-shade" layadmin-event="shade"></div>
+		</div>
+	</div>
+	
+</body>
+</html>
